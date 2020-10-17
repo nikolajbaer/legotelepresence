@@ -4,12 +4,12 @@
         <h1 v-else>Establishing Connection</h1>
         <div v-if="client_connected">Waiting on Client Connection</div>
         <button v-on:click="disconnect">Disconnect</button>
-        <video ref="video" width="800" height="600"></video>
+        <video autoplay playsinline ref="video" width="640" height="480"></video>
     </div>
 </template>
 
 <script>
-import PeerHost from "../peer_host.js"
+import RTCPeer from "../RTCPeer.js"
 
 export default {
     data: function() {
@@ -28,7 +28,9 @@ export default {
     },
     mounted(){
         this.updater = setInterval(this.updateState,200);
-        this.connection = new PeerHost(this.$refs['video']);
+        this.connection = new RTCPeer(this.$refs['video']);
+        console.log("Connecting",this.$refs['video'],"to ",this.connection)
+        window.host_peer = this.connection
     },
     destroyed(){
         clearInterval(this.updater);

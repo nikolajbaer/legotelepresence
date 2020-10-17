@@ -2,7 +2,7 @@
     <div>
         <h1>Remote Control for {{ meeting_id }}</h1>
 
-        <video ref="video" width="800" height="600"></video>
+        <video autoplay playsinline ref="video" width="640" height="480"></video>
 
         <div v-if="connected">
             <h2>You Are In Control</h2>
@@ -14,20 +14,18 @@
 </template>
 
 <script>
-import PeerClient from "../peer_client.js"
+import RTCPeer from "../RTCPeer.js"
 
 export default {
+    props: ['meeting_id'],
     data: function(){
         return {
             connection: null
         }
     },
     computed: {
-        meeting_id() {
-            return this.$route.params.meeting_id
-        },
         connected(){
-            return this.connection != null && this.connection.connected()
+            return this.connection != null && this.connection.connected
         }
     },
     mounted(){
@@ -35,8 +33,10 @@ export default {
     methods: {
         connect(){
             console.log("Calling",this.meeting_id)
-            this.connection = new PeerClient(this.meeting_id,this.$refs['video'])
+            this.connection = new RTCPeer(this.$refs['video'])
             this.connection.call(this.meeting_id)
+            window.client_peer = this.connection
+
         }
     }
 }

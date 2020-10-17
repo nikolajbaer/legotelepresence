@@ -3,6 +3,7 @@ import Welcome from "./components/Welcome.vue";
 import Configure from "./components/Configure.vue";
 import HostView from "./components/HostView.vue";
 import RemoteView from "./components/RemoteView.vue";
+import LocalTestView from "./components/LocalTestView.vue";
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -30,6 +31,12 @@ export default new Router({
             path: '/rc/:meeting_id', 
             name: 'remotecontrol',
             component: RemoteView,
+            props: true,
+        },
+        {
+            path: '/test', 
+            name: 'test-local',
+            component: LocalTestView,
             props: true,
         },
     ],
