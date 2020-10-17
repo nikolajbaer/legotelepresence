@@ -1,8 +1,8 @@
 // Routed components
 import Welcome from "./components/Welcome.vue";
 import Configure from "./components/Configure.vue";
-import ActiveTelePresence from "./components/ActiveTelePresence.vue";
-import RemoteControl from "./components/RemoteControl.vue";
+import HostView from "./components/HostView.vue";
+import RemoteView from "./components/RemoteView.vue";
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -24,12 +24,12 @@ export default new Router({
         {
             path: '/host',
             name: 'host',
-            component: ActiveTelePresence
+            component: HostView
         },
         {
             path: '/rc/:meeting_id', 
             name: 'remotecontrol',
-            component: RemoteControl,
+            component: RemoteView,
             props: true,
         },
     ],
