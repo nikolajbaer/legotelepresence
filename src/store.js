@@ -1,18 +1,24 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import BoostController from './boost_control'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    count: 0
+    boost: null
+  },
+  getters: {
+    boost: state => {
+      return state.boost
+    }
   },
   mutations: {
-    scan (state) {
-
+    set_boost (state, boost) {
+      state.boost = boost
     },
-    connect (state) {
-
-    }
+    create_boost (state) {
+      state.boost = new BoostController()
+    },
   }
 })

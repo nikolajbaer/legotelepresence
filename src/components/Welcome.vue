@@ -16,8 +16,8 @@
             </li>
         </ul>
 
-        <h3>Setup Your Robot</h3>
-        <router-link to="configure">Configure Robot</router-link>
+        <h3>Connect Your Lego Boost</h3>
+        <router-link to="configure">Connect Robot</router-link>
 
         <h3>Teleport to a Robot</h3>
         <input v-model="meeting_id" placeholder="Enter Meeting Id" /> <button v-on:click="join">Join</button>
@@ -33,8 +33,9 @@ export default {
     },
     methods: {
         join: function(){
-            // TODO validate meeting_id 
-            alert("joining "+this.meeting_id)
+            if( this.meeting_id ){
+                this.$router.push({ name: 'remotecontrol', params: {"meeting_id": this.meeting_id}})
+            }
         }
     }
 }

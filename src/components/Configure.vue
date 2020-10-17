@@ -27,30 +27,44 @@ import BoostController from '../boost_control.js';
 export default {
     data: function() {
         return {
-            boost: null,
             updater: null,
             deviceInfo: null
         }
     },
+    computed:{
+        boost(){
+            return this.$store.getters.boost;
+        }
+    },
     mounted(){
-        this.boost = new BoostController();
         this.updater = setInterval(this.updateState,200);
+        if(this.boost == null){
+            this.$store.commit('create_boost')
+        }
     },
     destroyed(){
         clearInterval(this.updater);
     },
     methods: {
         updateState: function(){
-            this.deviceInfo = this.boost.boost.deviceInfo
+            if(this.boost != null){
+                this.deviceInfo = this.boost.boost.deviceInfo
+            }else{
+                this.deviceInfo = null
+            }
         },
         connect: function(){
+            // todo move to store action
             this.boost.connect();
         },
         disconnect: function(){
-            this.boost.disconnect();
+            // todo move to store action
+            if( this.boost.connected ){
+                this.boost.disconnect();
+            }
         },
         invite_guest: function(){
-            alert("Todo create invite link");
+            this.$router.push( {path: 'host' } )
         }
     }
 }

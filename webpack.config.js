@@ -66,8 +66,7 @@ module.exports = {
     historyApiFallback: true,
     hot: true,
     proxy: {
-      '/api': { target:'https://www.mealscount.com/', changeOrigin: true  },
-      '/static': { target:'https://www.mealscount.com/', changeOrigin: true }
+      '/peerjs': { target:'http://localhost:9000/', changeOrigin: true  },
     }
   }
 }

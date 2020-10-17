@@ -6,6 +6,10 @@ export default class BoostController {
         this.boost = new LegoBoost();
     }    
 
+    connected(){
+        return this.boost.connected
+    }
+
     connect(){
         console.log("connecting..")
         const config = {};
