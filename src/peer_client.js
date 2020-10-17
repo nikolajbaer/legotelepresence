@@ -31,9 +31,13 @@ export default class PeerClient{
         console.log("starting client call to", session_id)
         const conn = this.peer.connect(session_id)
         conn.on('open', () => {
+            conn.on('data', function(data) {
+                console.log('Received', data);
+            });
             conn.send('Hello Worldy')
         })
 
+        /*
         navigator.mediaDevices.getUserMedia({video: true, audio: true}, (stream) => {
             console.log("starting call to ",session_id)
             this.current_conn = this.peer.call(session_id, stream);
@@ -44,7 +48,7 @@ export default class PeerClient{
             });
         }, (err) => {
             console.error('Failed to get local stream', err);
-        });    
+        });    */
     }
 
 }
