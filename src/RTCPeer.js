@@ -1,35 +1,82 @@
 import get_servers from './config.js'
 import io from 'socket.io-client';
 
+// Based on
+// https://codelabs.developers.google.com/codelabs/webrtc-web/#4
+// https://github.com/googlecodelabs/webrtc-web/blob/master/step-05/js/main.js
+
 export default class RTCPeer{
     constructor (video_element,is_initiator){
         this.video_element = video_element
         this.listening = false
         this.connected = false
         this.peer = null
+        this.remoteStream = null
+        this.localStream = null
+
+        // state management
         this.is_initiator = is_initiator;
-        this.socket = io()
+        this.is_started = false;
+        this.is_channel_ready = false
+        
+        this.servers = null; //get_servers();
+        
+        // Create Socket.io to signal and bind
+        this.createSocket()
 
-        const servers = get_servers();
+        this.conn = null;
 
-        // https://codelabs.developers.google.com/codelabs/webrtc-web/#4
-        // https://github.com/googlecodelabs/webrtc-web/blob/master/step-05/js/main.js
-        this.conn = new RTCPeerConnection( servers )
-        this.conn.addEventListener('icecandidate', e => this.onIceCandidate(this.conn, e));
-        this.conn.addEventListener('iceconnectionstatechange', e => this.onIceConnectionStateChange(this.conn, e));
+        // build list of devices
+        this.devices = null
+        navigator.mediaDevices.enumerateDevices().then( devices => {
+            console.log("Found media devices", devices)
+            this.devices =  devices
+        });
 
+        window.addEventListener('beforeunload', e => { this.sendMessage('bye'); })
+    }
+
+    getVideoStream(device_id){
+        const constraints = {
+            video: (device_id == null)? {facingMode:'environment'}: {deviceId: {exact:device_id} },
+            audio: true,
+        }
         // get the media stream
-        navigator.mediaDevices.getUserMedia( { video:true, audio: true }).then( ( stream ) => {
+        console.log("requesting user media",constraints)
+        navigator.mediaDevices.getUserMedia( constraints ).then( ( stream ) => {
             this.gotLocalMediaStream(stream)
         }).catch( ( error ) =>{
             console.error(error)
         });
     }
 
+    createSocket(){
+        this.socket = io()
+        this.socket.on('message', message => {
+            this.handleMessage(message)
+        })
+        this.socket.on('created', room => {
+            this.is_initiator = true
+        })
+        this.socket.on('full', room => {
+            console.log('room is full', room)
+        })
+        this.socket.on('join', room => {
+            this.is_channel_ready = true
+        })
+        this.socket.on('joined', room => {
+            this.is_channel_ready = true
+        })
+        this.socket.on('log', a => { console.log.apply(console,a)})
+
+        console.log("joining foo")
+        this.socket.emit('create or join', 'foo')
+    }
+
     gotLocalMediaStream(mediaStream) {
         this.video_element.srcObject = mediaStream;
         this.localStream = mediaStream;
-        console.log('Connected local stream for preview');
+        console.log('Connected local stream for preview',mediaStream);
         if(this.is_initiator){
            this.maybeStart() 
         }else{
@@ -37,12 +84,45 @@ export default class RTCPeer{
         }
     }
 
+    changeVideoDevice(device_id){
+        // https://www.twilio.com/blog/2018/04/choosing-cameras-javascript-mediadevices-api.html
+        if( this.localStream != null ){
+            this.localStream.getTracks().forEach( track => {
+                track.stop()
+            })
+        }
+        if(device_id != null){
+            console.log("Getting Video Stream ",device_id)
+            this.getVideoStream( device_id )
+        }
+    }
+
+    createPeerConnection(){
+        console.log("Createing peer connection")
+        try{
+            this.conn = new RTCPeerConnection( this.servers )
+            this.conn.addEventListener('icecandidate', e => this.onIceCandidate(e));
+            this.conn.addEventListener('addstream', e => this.onAddStream(e));
+            this.conn.addEventListener('removestream', e => { console.log("Remote stream removed",e) })
+        }catch(e){                
+            console.error("Failed to create peer connection", e)
+            alert("Could not create RTC Peer Connection")
+        }
+    }
+
     maybeStart(){
-        this.conn.addStream(this.localStream)
-        this.conn.createOffer( desc => {
-            this.conn.setLocalDescription(desc)
-            this.sendMessage( desc )
-        }, event => { console.error("create offer error",event)})
+        console.log("Maybe starting")
+        if(!this.is_started && typeof this.localStream !== 'undefined' && this.is_channel_ready){
+            this.createPeerConnection()
+            this.conn.addStream(this.localStream)
+            this.is_started = true
+            if(this.is_initiator){
+                this.conn.createOffer( 
+                    (desc) => { this.setLocalAndSendMessage(desc) },
+                    event => { console.error("create offer error",event)}
+                )
+            }
+        }
     }
 
     sendMessage(message){
@@ -50,25 +130,31 @@ export default class RTCPeer{
         this.socket.emit('message',message)    
     }
 
-    onIceCandidate(pc, event) {
-        console.log("on Ice Candidate",pc, event)
+    setLocalAndSendMessage(desc){
+        this.conn.setLocalDescription(desc)
+        this.sendMessage( desc )
+    }
+
+    onIceCandidate(event) {
+        console.log("on Ice Candidate",this.conn, event)
         const peerConnection = event.target;
-        const iceCandidate = event.candidate;
 
-        if (iceCandidate) {
-            const newIceCandidate = new RTCIceCandidate(iceCandidate);
-            const otherPeer = this.getOtherPeer(peerConnection);
+        if (event.candidate) {
+            this.sendMessage( {
+                type: 'candidate',
+                label: event.candidate.sdpMLineIndex,
+                id: event.candidate.sdpMid,
+                candidate: event.candidate.candidate,
+            })
+        }else{
+            console.log('End of candidates')
+        }
+    }
 
-            otherPeer.addIceCandidate(newIceCandidate)
-            .then(() => {
-                this.handleConnectionSuccess(peerConnection);
-            }).catch((error) => {
-                console.error("Connection Failure",peerConnection, error);
-            });
-
-            trace(`${getPeerName(peerConnection)} ICE candidate:\n` +
-                        `${event.candidate.candidate}.`);
-        } 
+    onAddStream( event ){
+        console.log('Remote stream added',event)
+        this.remoteStream = event.stream
+        this.video_element.srcObject = this.remoteStream
     }
 
     getOtherPeer( peerConnection ) {
@@ -98,5 +184,46 @@ export default class RTCPeer{
 
     call(meeting_id){
         alert("TODO Call " + meeting_id)
+    }
+
+    handleMessage(message){
+        if( message === 'got user media') {
+            this.maybeStart()
+        }else if(message.type === 'offer'){
+            if(!this.is_initiator && !this.is_started){
+                this.maybeStart()
+            }
+            this.conn.setRemoteDescription( new RTCSessionDescription( message))
+            this.conn.createAnswer().then(
+                (desc) => { this.setLocalAndSendMessage(desc) },
+                event => { console.error("create offer error",event)}
+            );
+        }else if( message.type === 'answer' && this.is_started ){
+            this.conn.setRemoteDescription( new RTCSessionDescription(message))
+        }else if(message.type === 'candidate' && this.is_started){
+            const candidate = new RTCIceCandidate({
+                sdpMLineIndex: message.label,
+                candidate: message.candidate,
+            })
+            this.conn.addIceCandidate( candidate)
+        }else if(message === 'bye' && this.is_started){
+            this.handleRemoteHangup()
+        }
+    }
+
+    handleRemoteHangup(){
+        this.stop()
+        this.is_initiator = false
+    }
+
+    hangup(){
+        this.stop()
+        this.sendMessage('bye')
+    }
+
+    stop(){
+        this.is_started = false
+        this.conn.close()
+        this.conn = null
     }
 }
