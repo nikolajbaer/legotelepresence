@@ -1,6 +1,9 @@
 import express from 'express';
 import * as enforce from 'express-sslify';
 import cors from 'cors';
+import Server from 'socket.io';
+import { createServer } from 'http'
+import { create } from 'domain';
 
 const port = process.env.PORT || 8080;
 
@@ -22,6 +25,13 @@ if(process.env.REDIRECT_TO_DOMAIN != undefined){
 
 app.use(express.static(__dirname + '/dist'));
 
-const server = app.listen(port, () => {
+const http = createServer(app)
+
+const io = new Server(http) 
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+const server = http.listen(port, () => {
   console.log('Server listening at http://localhost:%s', port);
 });

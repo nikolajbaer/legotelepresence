@@ -3,6 +3,8 @@
         <h1 v-if="session_id != null">{{ session_id }}</h1>
         <h1 v-else>Establishing Connection</h1>
         <div v-if="client_connected">Waiting on Client Connection</div>
+        <div v-if="boost_connected">Boost Connected</div>
+        <div v-else>Boost Not Connected!</div>
         <button v-on:click="disconnect">Disconnect</button>
         <video autoplay playsinline ref="video" width="640" height="480"></video>
     </div>
@@ -21,6 +23,9 @@ export default {
     computed: {
         boost(){
             return this.$store.getters.boost
+        },
+        boost_connected(){
+            return this.$store.getters.boost != null && this.$store.getters.boost.connected()
         },
         client_connected(){
             return this.connection != null && !this.connection.connected
@@ -50,3 +55,9 @@ export default {
     }   
 }
 </script>
+
+<style scoped>
+    video {
+        filter: hue-rotate(75deg) saturate(200%);
+    }
+</style>>

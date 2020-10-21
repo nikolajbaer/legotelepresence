@@ -1,7 +1,6 @@
 
-
 // https://gist.github.com/yetithefoot/7592580
-export default function get_peer_config(){
+export default function get_servers(){
     return null;
     /*{
         // host: 'localhost', port: 8080, path: '/peerjs',

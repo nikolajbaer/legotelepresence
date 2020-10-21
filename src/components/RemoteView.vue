@@ -41,3 +41,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    video {
+        filter: hue-rotate(-404deg) saturate(180%);
+    }
+</style>>
