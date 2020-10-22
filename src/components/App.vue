@@ -1,9 +1,15 @@
 <template>
-    <div>
-        <h1>Lego Boost Telepresence</h1>
+    <div class="page-container">
+        <md-app>
+            <md-app-toolbar class="md-primary">
+                <h1 class="md-title">Lego Boost Telepresence</h1>
+            </md-app-toolbar>
 
-        <router-view></router-view>
+            <md-app-content>
+                <router-view></router-view>
+            </md-app-content>
 
+        </md-app>
     </div>
 </template>
 
