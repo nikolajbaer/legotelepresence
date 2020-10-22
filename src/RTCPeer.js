@@ -13,6 +13,7 @@ export default class RTCPeer{
         this.peer = null
         this.remoteStream = null
         this.localStream = null
+        this.controlsDataChannel = null
 
         // state management
         this.is_initiator = is_initiator;
@@ -104,10 +105,35 @@ export default class RTCPeer{
             this.conn.addEventListener('icecandidate', e => this.onIceCandidate(e));
             this.conn.addEventListener('addstream', e => this.onAddStream(e));
             this.conn.addEventListener('removestream', e => { console.log("Remote stream removed",e) })
+            if(this.is_initiator){
+                this.controlsDataChannel = this.conn.createDataChannel("controls")
+                this.controlsDataChannel.addEventListener("message", e => {
+                    console.log(e)
+                    this.onControlsDataChannelMessage( e.data )
+                })
+                this.controlsDataChannel.addEventListener("open", e => { console.log("Data Channel opened") })
+                this.controlsDataChannel.addEventListener("close", e => { console.log("Data Channel closed") })
+            }else{
+                this.conn.addEventListener('datachannel', e => { this.createReceiveDataChannel(e.channel) } )
+            }
         }catch(e){                
             console.error("Failed to create peer connection", e)
             alert("Could not create RTC Peer Connection")
         }
+    }
+
+    createReceiveDataChannel( channel ){
+        this.controlsDataChannel = channel
+        this.controlsDataChannel.addEventListener("message", e => {
+            this.onControlsDataChannelMessage( e.data  )
+        })
+        this.controlsDataChannel.addEventListener("open", e => { console.log("Data Channel opened") })
+        this.controlsDataChannel.addEventListener("close", e => { console.log("Data Channel closed") })
+    }
+
+    onControlsDataChannelMessage( data ){
+        const control_data = JSON.parse(data);
+        console.log("control data received", control_data)
     }
 
     maybeStart(){
@@ -157,16 +183,6 @@ export default class RTCPeer{
         this.video_element.srcObject = this.remoteStream
     }
 
-    getOtherPeer( peerConnection ) {
-        // Only will work on test view!
-        if(window.client_peer && window.client_peer === this.conn){
-            return window.host_peer.conn;
-        }else{
-            return window.client_peer.conn;
-        }
-        // TODO implement signalling!
-    }
-
     handleConnectionSuccess( peer ){
         this.peer = peer
         this.connected = true
@@ -184,6 +200,10 @@ export default class RTCPeer{
 
     call(meeting_id){
         alert("TODO Call " + meeting_id)
+    }
+
+    receiveChannelCallback(){
+
     }
 
     handleMessage(message){
@@ -208,6 +228,23 @@ export default class RTCPeer{
             this.conn.addIceCandidate( candidate)
         }else if(message === 'bye' && this.is_started){
             this.handleRemoteHangup()
+        }
+    }
+
+    control( info ){
+        const controls = {
+            fwd: false,
+            rev: false,
+            left: false,
+            right: false,
+        }
+        Object.assign(controls,info)
+        sendControlData( controls )
+    }
+
+    sendControlData( data ){
+        if(this.controlsDataChannel != null){
+            this.controlsDataChannel.send( JSON.stringify( data ) )
         }
     }
 

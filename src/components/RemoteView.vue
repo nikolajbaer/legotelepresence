@@ -5,6 +5,10 @@
 
         <div v-if="connected">
             <h2>You Are In Control</h2>
+            <button v-on:click="forward()">Forward</button>
+            <button v-on:click="left()">Left</button>
+            <button v-on:click="right()">Right</button>
+            <button v-on:click="back()">Back</button>
         </div>
         <div v-else>
             <button v-on:click="connect">Connect</button>
@@ -41,7 +45,19 @@ export default {
             this.connection.call(this.meeting_id)
             window.client_peer = this.connection
 
-        }
+        },
+        forward(){
+            this.connection.controls({fwd:true})
+        },
+        reverse(){
+            this.connection.control({rev:true})
+        },
+        left(){
+            this.connection.control({left:true})
+        },
+        right(){
+            this.connection.control({right:true})
+        },
     }
 }
 </script>
