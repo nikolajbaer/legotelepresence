@@ -2,21 +2,21 @@
     <div>
         <h1>Configure Lego Boost</h1>
         <div v-if="deviceInfo != null && deviceInfo.connected">
-            <button v-on:click="disconnect">Disconnect</button>
+            <md-button v-on:click="disconnect">Disconnect</md-button>
             <div>Connected</div>
 
             <h2>Test Robot</h2>
-            <button v-on:click="boost.forward()">Forward</button>
-            <button v-on:click="boost.left()">Left</button>
-            <button v-on:click="boost.right()">Right</button>
-            <button v-on:click="boost.back()">Back</button>
+            <md-button v-on:click="boost.forward()">Forward</md-button>
+            <md-button v-on:click="boost.left()">Left</md-button>
+            <md-button v-on:click="boost.right()">Right</md-button>
+            <md-button v-on:click="boost.back()">Back</md-button>
 
             <h2>Invite Guest</h2>
             <button v-on:click="invite_guest">Invite</button>
         </div>
         <div v-else>
             <div>Not Connected</div>
-            <button v-on:click="connect">Connect</button>
+            <md-button v-on:click="connect">Connect</md-button>
         </div>
     </div>
 </template>

@@ -17,10 +17,14 @@
         </ul>
 
         <h3>Connect Your Lego Boost</h3>
-        <router-link to="configure">Connect Robot</router-link>
+        <router-link class="md-button" to="configure">Connect Robot</router-link>
 
         <h3>Teleport to a Robot</h3>
-        <input v-model="meeting_id" placeholder="Enter Meeting Id" /> <button v-on:click="join">Join</button>
+        <md-field>
+            <label>Meeting Id</label>
+            <md-input v-model="meeting_id" placeholder="Enter Meeting Id" /> 
+        </md-field>
+        <md-button v-on:click="join">Join</md-button>
     </div>
 </template>
 

@@ -13,7 +13,7 @@ export default {
     data: function() {
         return {
             devices: null,
-            device_id: null,
+            device_id: '',
         }
     },
     watch: {
@@ -27,7 +27,7 @@ export default {
     methods: {
         update_devices(){
             if(this.connection == null || this.connection.devices == null){ return [] }
-            const devices = []
+            const devices = [{value:'',label:'- Select Camera -'}]
             var n = 1;
             this.connection.devices.forEach( d => {
                 if( d.kind === 'videoinput'){

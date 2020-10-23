@@ -8,10 +8,10 @@
             <button v-on:click="forward()">Forward</button>
             <button v-on:click="left()">Left</button>
             <button v-on:click="right()">Right</button>
-            <button v-on:click="back()">Back</button>
+            <button v-on:click="reverse()">Reverse</button>
         </div>
         <div v-else>
-            <button v-on:click="connect">Connect</button>
+            <button v-if="ready_to_call" v-on:click="connect">Connect</button>
         </div>
 
         <video autoplay playsinline ref="video" width="640" height="480"></video>
@@ -34,29 +34,31 @@ export default {
     computed: {
         connected(){
             return this.connection != null && this.connection.connected
-        }
+        },
+        ready_to_call(){
+            return this.connection != null && this.connection.ready_to_call
+        },
     },
     mounted(){
+        this.connection = new RTCPeer(this.$refs['video'],true)
+        window.client_peer = this.connection
     },
     methods: {
         connect(){
             console.log("Calling",this.meeting_id)
-            this.connection = new RTCPeer(this.$refs['video'],true)
             this.connection.call(this.meeting_id)
-            window.client_peer = this.connection
-
         },
         forward(){
-            this.connection.controls({fwd:true})
+            this.connection.sendControlData({fwd:true})
         },
         reverse(){
-            this.connection.control({rev:true})
+            this.connection.sendControlData({rev:true})
         },
         left(){
-            this.connection.control({left:true})
+            this.connection.sendControlData({left:true})
         },
         right(){
-            this.connection.control({right:true})
+            this.connection.sendControlData({right:true})
         },
     }
 }

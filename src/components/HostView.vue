@@ -43,6 +43,18 @@ export default {
     mounted(){
         this.updater = setInterval(this.updateState,200);
         this.connection = new RTCPeer(this.$refs['video'],false);
+        this.connection.onControlUpdate = d => {
+            console.log("host received control update",d)
+            if(d.fwd){ 
+                this.boost.forward()
+            }else if(d.rev){
+                this.boost.back()
+            }else if(d.left){
+                this.boost.left()
+            }else if(d.right){
+                this.boost.right()
+            }
+        } 
         console.log("Connecting",this.$refs['video'],"to ",this.connection)
         window.host_peer = this.connection
     },

@@ -14,11 +14,13 @@ export default class RTCPeer{
         this.remoteStream = null
         this.localStream = null
         this.controlsDataChannel = null
+        this.onControlUpdate = null
 
         // state management
         this.is_initiator = is_initiator;
         this.is_started = false;
         this.is_channel_ready = false
+        this.ready_to_call = false
         
         this.servers = null; //get_servers();
         
@@ -79,9 +81,9 @@ export default class RTCPeer{
         this.localStream = mediaStream;
         console.log('Connected local stream for preview',mediaStream);
         if(this.is_initiator){
-           this.maybeStart() 
+            this.ready_to_call = true
         }else{
-           this.listening = true 
+            this.listening = true 
         }
     }
 
@@ -111,7 +113,10 @@ export default class RTCPeer{
                     console.log(e)
                     this.onControlsDataChannelMessage( e.data )
                 })
-                this.controlsDataChannel.addEventListener("open", e => { console.log("Data Channel opened") })
+                this.controlsDataChannel.addEventListener("open", e => { 
+                    this.connected = true
+                    console.log("Client Data Channel opened") 
+                })
                 this.controlsDataChannel.addEventListener("close", e => { console.log("Data Channel closed") })
             }else{
                 this.conn.addEventListener('datachannel', e => { this.createReceiveDataChannel(e.channel) } )
@@ -127,13 +132,19 @@ export default class RTCPeer{
         this.controlsDataChannel.addEventListener("message", e => {
             this.onControlsDataChannelMessage( e.data  )
         })
-        this.controlsDataChannel.addEventListener("open", e => { console.log("Data Channel opened") })
+        this.controlsDataChannel.addEventListener("open", e => { 
+            this.connected = true
+            console.log("Host Data Channel opened") 
+        })
         this.controlsDataChannel.addEventListener("close", e => { console.log("Data Channel closed") })
     }
 
     onControlsDataChannelMessage( data ){
         const control_data = JSON.parse(data);
         console.log("control data received", control_data)
+        if(this.onControlUpdate){
+            this.onControlUpdate(control_data)
+        }
     }
 
     maybeStart(){
@@ -183,27 +194,9 @@ export default class RTCPeer{
         this.video_element.srcObject = this.remoteStream
     }
 
-    handleConnectionSuccess( peer ){
-        this.peer = peer
-        this.connected = true
-        // TODO
-        // initiate remote stream 
-        // disconnect local stream from video_el
-        // connect local_stream to peer
-        // connect remote steram to video_el
-        // create data channel for Remote Control
-    }
-
-    onIceConnectionStateChange( event ){
-        console.log("Connection State Change",event)
-    }
-
     call(meeting_id){
-        alert("TODO Call " + meeting_id)
-    }
-
-    receiveChannelCallback(){
-
+        console.log("Calling " + meeting_id)
+        this.maybeStart() 
     }
 
     handleMessage(message){
