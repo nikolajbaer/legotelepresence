@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "server": "node -r esm server.js",
+    "start": "node -r esm server.js",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
