@@ -22,8 +22,6 @@ export default class RTCPeer{
         this.is_channel_ready = false
         this.ready_to_call = false
         
-        this.servers = null; //get_servers();
-        
         // Create Socket.io to signal and bind
         this.createSocket()
 
@@ -35,6 +33,19 @@ export default class RTCPeer{
             console.log("Found media devices", devices)
             this.devices =  devices
         });
+
+        if (location.hostname !== 'localhost') {
+            this.config = { 'iceServers': [
+                {'urls': 'stun:stun.l.google.com:19302'},
+                {
+                    url: 'turn:numb.viagenie.ca',
+                    credential: 'muazkh',
+                    username: 'webrtc@live.com'
+                },
+            ]}
+        }else{
+            this.config = null
+        }
 
         window.addEventListener('beforeunload', e => { this.sendMessage('bye'); })
     }
@@ -103,7 +114,7 @@ export default class RTCPeer{
     createPeerConnection(){
         console.log("Createing peer connection")
         try{
-            this.conn = new RTCPeerConnection( this.servers )
+            this.conn = new RTCPeerConnection( this.config )
             this.conn.addEventListener('icecandidate', e => this.onIceCandidate(e));
             this.conn.addEventListener('addstream', e => this.onAddStream(e));
             this.conn.addEventListener('removestream', e => { console.log("Remote stream removed",e) })
