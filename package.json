@@ -6,7 +6,7 @@
     "build": "webpack",
     "start": "node -r esm server.js",
     "watch": "webpack --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -29,5 +29,27 @@
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@vue/test-utils": "^1.1.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^26.6.3",
+    "vue-jest": "^3.0.7"
+  },
+  "jest": {
+    "transform": {
+      ".*\\.(js)$": "babel-jest",
+      ".*\\.(vue)$": "vue-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ]
+  },
+  "babel": {
+    "presets": ["@babel/preset-env"]
   }
 }

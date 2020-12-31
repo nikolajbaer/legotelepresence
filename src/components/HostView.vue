@@ -5,10 +5,15 @@
 
         <div v-if="client_connected">Waiting on Client Connection</div>
 
-        <div v-if="boost_connected">Boost Connected</div>
-        <div v-else>Boost Not Connected!</div>
+        <div v-if="boost && boost.connected()">
+            Boost Connected
+            <button v-on:click="disconnect">Disconnect</button>
+        </div>
+        <div v-else>
+            Boost Not Connected!
+            <router-link to="configure">Connect to Boost Hub</router-link>
+        </div>
 
-        <button v-on:click="disconnect">Disconnect</button>
         <SelectDevice v-bind:connection="connection" />
 
         <video autoplay playsinline ref="video" width="640" height="480"></video>
@@ -27,14 +32,12 @@ export default {
             session_id: null,
             devices: null,
             device_id: null,
+            boost_connected: false,
         }
     },
     computed: {
         boost(){
             return this.$store.getters.boost
-        },
-        boost_connected(){
-            return this.$store.getters.boost != null && this.$store.getters.boost.connected()
         },
         client_connected(){
             return this.connection != null && !this.connection.connected
@@ -63,9 +66,8 @@ export default {
     },
     methods: {
         updateState: function(){
-            if(this.boost != null){
-                this.deviceInfo = this.boost.boost.deviceInfo
-            }
+            this.boost_connected = this.boost != null && this.boost.connected()
+
             if(this.connection != null){
                 this.session_id = this.connection.session_id
             }

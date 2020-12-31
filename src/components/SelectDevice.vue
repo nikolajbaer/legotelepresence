@@ -30,7 +30,7 @@ export default {
             const devices = [{value:'',label:'- Select Camera -'}]
             var n = 1;
             this.connection.devices.forEach( d => {
-                if( d.kind === 'videoinput'){
+                if( d.kind === 'videoinput' && d.deviceId != ''){
                     devices.push({value: d.deviceId, label:d.label || `Camera ${n++}`})
                 }
             })
