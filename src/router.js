@@ -18,11 +18,6 @@ export default new Router({
             component: Welcome,
         },
         {
-            path: '/configure', 
-            name: 'configure',
-            component: Configure
-        },
-        {
             path: '/host',
             name: 'host',
             component: HostView

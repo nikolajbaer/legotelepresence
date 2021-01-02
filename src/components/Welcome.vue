@@ -16,8 +16,8 @@
             </li>
         </ul>
 
-        <h3>Connect Your Lego Boost</h3>
-        <router-link class="md-button" to="configure">Connect Robot</router-link>
+        <h3>Host someone with your Lego Boost</h3>
+        <router-link class="md-button" to="host">Host a Session</router-link>
 
         <h3>Teleport to a Robot</h3>
         <md-field>

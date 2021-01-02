@@ -1,16 +1,24 @@
-version: '3'
+version: '3.4'
+
 services:
   app:
-    build: ./
     command: npm start
     ports:
       - 8080:8080
-    working_dir: /code/app/
-    volumes:
-      - ./:/code/app/:delegated
-      - notused:/code/app/node_modules
-      - ./package.json:/code/package.json
-      #- ./package-lock.json:/code/package-lock.json
+    depends_on: 
+      - watch
+    <<: &COMMON
+      build: ./
+      working_dir: /code/app/
+      volumes:
+        - ./:/code/app/:delegated
+        - notused:/code/app/node_modules
+        - ./package.json:/code/package.json
+        - ./package-lock.json:/code/package-lock.json
+
+  watch:
+    command: npm run watch
+    <<: *COMMON
 
 volumes:
   notused:

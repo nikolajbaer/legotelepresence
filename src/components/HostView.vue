@@ -11,7 +11,18 @@
         </div>
         <div v-else>
             Boost Not Connected!
-            <router-link to="configure">Connect to Boost Hub</router-link>
+            <button id="show-configure" @click="show_configure = true">Connect Boost Hub</button>
+            <md-dialog :md-active.sync="show_configure">
+                <md-dialog-title>Configure Boost Hub</md-dialog-title>
+                <md-tabs md-dynamic-height>
+                    <md-tab>
+                        <Configure />
+                    </md-tab>
+                </md-tabs>
+                <md-dialog-actions>
+                    <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+                </md-dialog-actions>
+            </md-dialog>
         </div>
 
         <SelectDevice v-bind:connection="connection" />
@@ -23,9 +34,10 @@
 <script>
 import RTCPeer from "../RTCPeer.js"
 import SelectDevice from "./SelectDevice.vue"
+import Configure from "./Configure.vue"
 
 export default {
-    components: {SelectDevice},
+    components: {SelectDevice,Configure},
     data: function() {
         return {
             connection: null,
@@ -33,6 +45,7 @@ export default {
             devices: null,
             device_id: null,
             boost_connected: false,
+            show_configure: false,
         }
     },
     computed: {
@@ -73,7 +86,9 @@ export default {
             }
         },
         disconnect: function(){
-            // todo store action?
+            if(this.boost && this.boost.connected()){
+                this.boost.disconnect()
+            }
         },
     }   
 }

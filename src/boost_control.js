@@ -7,7 +7,7 @@ export default class BoostController {
     }    
 
     connected(){
-        return this.boost.connected
+        return this.boost.deviceInfo.connected
     }
 
     connect(){

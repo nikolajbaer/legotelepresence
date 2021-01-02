@@ -2,7 +2,17 @@
     <div class="page-container">
         <md-app>
             <md-app-toolbar class="md-primary">
-                <h1 class="md-title">Lego Boost Telepresence</h1>
+                <div class="md-toolbar-section-start">
+                    <router-link to="/">
+                        <h1 class="md-title" style="flex: 1">
+                            Lego Boost Telepresence
+                        </h1>
+                    </router-link>
+                </div>
+
+                <div class="md-toolbar-section-end">
+                    <span v-if="boost && boost.connected()">🔌 Boost Connected</span>
+                </div>
             </md-app-toolbar>
 
             <md-app-content>
@@ -20,5 +30,10 @@ export default {
         return {
         }
     },
+    computed: {
+        boost(){
+            return this.$store.getters.boost;
+        }
+    }
 }
 </script>

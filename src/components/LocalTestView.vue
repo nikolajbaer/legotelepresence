@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div style="width: 50%; position: absolute; left: 0px; top: 100px; border: 1px;">
+        <div>
             <HostView></HostView> 
         </div>
-        <div style="width: 50%; position: absolute; right: 0px; top: 100px; boreder: 1px;">
+        <div>
             <RemoteView v-bind:meeting_id="meeting_id"></RemoteView>
         </div>
     </div>

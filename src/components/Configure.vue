@@ -11,8 +11,6 @@
             <md-button v-on:click="boost.right()">Right</md-button>
             <md-button v-on:click="boost.back()">Back</md-button>
 
-            <h2>Invite Guest</h2>
-            <button v-on:click="invite_guest">Invite</button>
         </div>
         <div v-else>
             <div>Not Connected</div>
