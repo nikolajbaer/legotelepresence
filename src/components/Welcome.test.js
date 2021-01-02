@@ -1,5 +1,10 @@
+import Vue from 'vue';
 import VueRouter from 'vue-router'
-import Component from '../src/components/Welcome.vue'
+import Component from './Welcome.vue'
+import { mount, createLocalVue } from '@vue/test-utils'
+
+import VueMaterial from 'vue-material'
+Vue.use(VueMaterial)
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)

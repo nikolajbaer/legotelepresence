@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>Configure Lego Boost</h1>
         <div v-if="deviceInfo != null && deviceInfo.connected">
             <md-button v-on:click="disconnect">Disconnect</md-button>
             <div>Connected</div>
@@ -13,8 +12,7 @@
 
         </div>
         <div v-else>
-            <div>Not Connected</div>
-            <md-button v-on:click="connect">Connect</md-button>
+            <md-button v-on:click="connect">Connect Lego Boost</md-button>
         </div>
     </div>
 </template>

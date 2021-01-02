@@ -112,7 +112,7 @@ export default class RTCPeer{
     }
 
     createPeerConnection(){
-        console.log("Createing peer connection")
+        console.log("Creating peer connection")
         try{
             this.conn = new RTCPeerConnection( this.config )
             this.conn.addEventListener('icecandidate', e => this.onIceCandidate(e));

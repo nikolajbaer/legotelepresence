@@ -14,14 +14,12 @@
             <button id="show-configure" @click="show_configure = true">Connect Boost Hub</button>
             <md-dialog :md-active.sync="show_configure">
                 <md-dialog-title>Configure Boost Hub</md-dialog-title>
-                <md-tabs md-dynamic-height>
-                    <md-tab>
-                        <Configure />
-                    </md-tab>
-                </md-tabs>
-                <md-dialog-actions>
-                    <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-                </md-dialog-actions>
+                <div class="md-dialog-content">
+                    <Configure />
+                    <md-dialog-actions>
+                        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+                    </md-dialog-actions>
+                </div>
             </md-dialog>
         </div>
 
