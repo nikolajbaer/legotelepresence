@@ -21,8 +21,13 @@ export default {
             this.update_devices()
         },
         device_id: function(newVal, oldVal) {
-            this.connection.changeVideoDevice(newVal)
+            if(newVal != ''){
+                this.connection.changeVideoDevice(newVal)
+            }
         }
+    },
+    mounted(){
+        this.update_devices()
     },
     methods: {
         update_devices(){

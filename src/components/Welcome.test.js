@@ -1,19 +1,13 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router'
+import vue_setup from './jest.vue_env.js'
 import Component from './Welcome.vue'
-import { mount, createLocalVue } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
-import VueMaterial from 'vue-material'
-Vue.use(VueMaterial)
-
-const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter()
+let vue_env = vue_setup()
 
 test('Welcome renders', () => {
   const wrapper = mount(Component, {
-    localVue,
-    router
+    localVue: vue_env.localVue,
+    router: vue_env.router
   })
 
   // Assert the rendered text of the component
