@@ -1,20 +1,25 @@
 <template>
     <div>
         <h1>Remote Control for {{ meeting_id }}</h1>
-        <select-device v-bind:connection="connection"></select-device>
 
-        <div v-if="connected">
+        <div class="md-layout md-gutter">
+            <select-device class="md-layout-item" v-bind:connection="connection"></select-device>
+        </div>
+
+        <div class="md-layout md-gutter" v-if="connected">
             <h2>You Are In Control</h2>
-            <button v-on:click="forward()">Forward</button>
-            <button v-on:click="left()">Left</button>
-            <button v-on:click="right()">Right</button>
-            <button v-on:click="reverse()">Reverse</button>
+            <md-button v-on:click="forward()">Forward</md-button>
+            <md-button v-on:click="left()">Left</md-button>
+            <md-button v-on:click="right()">Right</md-button>
+            <md-button v-on:click="reverse()">Reverse</md-button>
         </div>
-        <div v-else>
-            <button v-if="ready_to_call" v-on:click="connect">Connect</button>
+        <div class="md-layout md-gutter" v-else>
+            <md-button v-if="ready_to_call" v-on:click="connect">Connect</md-button>
         </div>
 
-        <video autoplay playsinline ref="video" width="640" height="480"></video>
+        <div class="md-layout md-gutter">
+            <video autoplay playsinline ref="video" width="640" height="480"></video>
+        </div>
 
     </div>
 </template>
