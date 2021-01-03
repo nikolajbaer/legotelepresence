@@ -40,7 +40,8 @@ export default {
         },
     },
     mounted(){
-        this.connection = new RTCPeer(this.$refs['video'],true)
+        console.log("connecting to " + this.meeting_id)
+        this.connection = new RTCPeer(this.$refs['video'],true,this.meeting_id)
         window.client_peer = this.connection
     },
     methods: {

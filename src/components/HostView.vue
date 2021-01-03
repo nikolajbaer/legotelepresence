@@ -1,9 +1,10 @@
 <template>
     <div>
-        <h1 v-if="session_id != null">{{ session_id }}</h1>
+        <h1 v-if="meeting_id != null">Your Meeting Id: {{ meeting_id }}</h1>
         <h1 v-else>Establishing Connection</h1>
 
         <div v-if="client_connected">Waiting on Client Connection</div>
+
 
         <div v-if="boost && boost.connected()">
             Boost Connected
@@ -39,7 +40,7 @@ export default {
     data: function() {
         return {
             connection: null,
-            session_id: null,
+            meeting_id: null,
             devices: null,
             device_id: null,
             boost_connected: false,
@@ -56,7 +57,7 @@ export default {
     },
     mounted(){
         this.updater = setInterval(this.updateState,200);
-        this.connection = new RTCPeer(this.$refs['video'],false);
+        this.connection = new RTCPeer(this.$refs['video'],false,null);
         this.connection.onControlUpdate = d => {
             console.log("host received control update",d)
             if(d.fwd){ 
@@ -80,7 +81,7 @@ export default {
             this.boost_connected = this.boost != null && this.boost.connected()
 
             if(this.connection != null){
-                this.session_id = this.connection.session_id
+                this.meeting_id = this.connection.meeting_id
             }
         },
         disconnect: function(){

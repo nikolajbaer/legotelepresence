@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 // https://github.com/googlecodelabs/webrtc-web/blob/master/step-05/js/main.js
 
 export default class RTCPeer{
-    constructor (video_element,is_initiator){
+    constructor (video_element,is_initiator,meeting_id){
         this.video_element = video_element
         this.listening = false
         this.connected = false
@@ -21,6 +21,11 @@ export default class RTCPeer{
         this.is_started = false;
         this.is_channel_ready = false
         this.ready_to_call = false
+
+        // null if we are listening and want one from the server
+        this.meeting_id = meeting_id;
+        console.log("Setting this meeting id to " + this.meeting_id)
+
         
         // Create Socket.io to signal and bind
         this.createSocket()
@@ -70,21 +75,28 @@ export default class RTCPeer{
             this.handleMessage(message)
         })
         this.socket.on('created', room => {
-            this.is_initiator = true
+            // you created
+            console.log("Handling created for",room)
+            this.is_channel_ready = true
+            this.meeting_id = room
         })
         this.socket.on('full', room => {
             console.log('room is full', room)
         })
         this.socket.on('join', room => {
+            // someone else joined
             this.is_channel_ready = true
         })
         this.socket.on('joined', room => {
+            // you joined
             this.is_channel_ready = true
+            this.meeting_id = room
+            console.log("you have joined " + this.meeting_id)
         })
         this.socket.on('log', a => { console.log.apply(console,a)})
 
-        console.log("joining foo")
-        this.socket.emit('create or join', 'foo')
+        console.log("creating or joining " + this.meeting_id)
+        this.socket.emit('create or join', this.meeting_id)
     }
 
     gotLocalMediaStream(mediaStream) {
@@ -112,7 +124,7 @@ export default class RTCPeer{
     }
 
     createPeerConnection(){
-        console.log("Creating peer connection")
+        console.log("Createing peer connection")
         try{
             this.conn = new RTCPeerConnection( this.config )
             this.conn.addEventListener('icecandidate', e => this.onIceCandidate(e));
@@ -159,7 +171,7 @@ export default class RTCPeer{
     }
 
     maybeStart(){
-        console.log("Maybe starting")
+        console.log("Maybe starting",this.is_started,typeof this.localStream,this.is_channel_ready)
         if(!this.is_started && typeof this.localStream !== 'undefined' && this.is_channel_ready){
             this.createPeerConnection()
             this.conn.addStream(this.localStream)

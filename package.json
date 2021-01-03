@@ -10,7 +10,6 @@
   },
   "author": "Nikolaj Baer",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
     "css-loader": "^5.0.0",
@@ -21,6 +20,7 @@
     "lego-boost-browser": "git+https://github.com/ttu/lego-boost-browser.git",
     "socket.io": "^2.3.0",
     "style-loader": "^2.0.0",
+    "uuid": "^8.3.2",
     "vue": "^2.6.12",
     "vue-loader": "^15.9.3",
     "vue-material": "^1.0.0-beta-15",
