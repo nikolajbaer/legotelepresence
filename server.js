@@ -4,7 +4,7 @@ import cors from 'cors';
 import Server from 'socket.io';
 import { createServer } from 'http'
 import { create } from 'domain';
-import { v4 as uuidv4 } from 'uuid';
+import short from 'short-uuid';
 
 const port = process.env.PORT || 8080;
 
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
   socket.on('create or join', function(room){
     log('Received request to create or join room ' + room)
     if(room == null){
-      room = uuidv4()
+      room = short.generate().substring(0,8)
     }
     const clientsInRoom = io.sockets.adapter.rooms[room]
     const numClients = clientsInRoom? Object.keys(clientsInRoom.sockets).length : 0
